@@ -1,0 +1,72 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: postgres-vmware-devtest
+  title: Provision dev/test Postgres Database on VMware
+  description: Set up a Postgres database using the VMware API
+spec:
+  owner: SKIP
+  type: service
+
+  parameters:
+    - name: teamname
+        description: Name of the team responsible for this database
+        schema:
+          type: string
+    - name: hwconfig
+        description: Hardware configuration for the VM
+        schema:
+          type: string
+          enum:
+            - small-4cpu-4gb
+            - medium-4cpu-8gb
+            - large-8cpu-32gb
+    - name: disk_size
+        description: Size of the disk in GB (50-500GB)
+        schema:
+          type: string
+    - name: branch
+        description: The environment this database is running in
+        schema:
+          type: string
+          enum:
+            - dev
+            - tst
+    - name: tuning
+        description: The tuning profile to use
+        schema:
+          type: string
+          enum:
+            - datawarehouse
+            - mixed
+            - oltp
+            - web
+    - name: name
+        description: Name of the VM
+        schema:
+          type: string
+    - name: db-user
+        description: The database user to create
+        schema:
+          type: string
+    - name: db-password
+        description: The database password to use
+        schema:
+          type: string
+
+  steps:
+    - id: create-vm
+        name: Create VM
+        action: vmware:create-vm
+        input:
+          Teamname: '{{ parameters.teamname }}'
+          hardware_config: '{{ parameters.hwconfig }}'
+          datadiskSize: '{{ parameters.disk-size }}'
+          branch: '{{ parameters.branch }}'
+          Tune: '{{ parameters.tuning }}'
+          name: '{{ parameters.name }}'
+          dbuser: '{{ parameters.db-user }}'
+          dbpassword: '{{ parameters.db-password }}'
+
+  output:
+    - url: '{{ steps.create-vm.output.vmUrl }}'
