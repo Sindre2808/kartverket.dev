@@ -23,7 +23,7 @@ app:
 
 organization:
   name: Kartverket
-
+hello
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for
